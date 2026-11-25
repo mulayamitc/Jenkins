@@ -1,0 +1,15 @@
+pipeline{
+    agent any
+    environment {
+          APP_NAME = 'my-web-app'
+          BUILD_DIR = 'build'
+         DEPLOY_DIR = 'deployment'
+          }
+    stages{
+        stage('Start'){
+            steps{
+                echo 'Starting advance application.....'
+            }
+        }
+    }
+}
