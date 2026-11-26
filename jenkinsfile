@@ -1,15 +1,62 @@
-pipeline{
-    agent any
-    environment {
-          APP_NAME = 'my-web-app'
-          BUILD_DIR = 'build'
-         DEPLOY_DIR = 'deployment'
-          }
-    stages{
-        stage('Start'){
-            steps{
-                echo 'Starting advance application.....'
-            }
-        }
-    }
+pipeline {
+agent any
+environment {
+APP_NAME = 'my-web-app'
+BUILD_DIR = 'build'
+DEPLOY_DIR = 'deployment'
+}
+stages {
+stage('Checkout') {
+steps {
+echo 'Preparing application source code...'
+sh 'pwd'
+sh 'ls -la'
+}
+}
+stage('Build') {
+steps {
+echo 'Building application...'
+sh '''
+mkdir -p "$BUILD_DIR"
+cat > "$BUILD_DIR/index.html" <<EOF
+<html>
+<h1>Welcome to Jenkins CI/CD</h1>
+<p>Application built successfully!</p>
+</html>
+EOF
+'''
+}
+}
+stage('Test') {
+steps {
+echo 'Testing application...'
+sh '''
+test -f "$BUILD_DIR/index.html"
+grep -q "Welcome to Jenkins CI/CD" "$BUILD_DIR/index.html"
+echo "All tests passed!"
+'''
+}
+}
+stage('Deploy') {
+steps {
+echo 'Deploying application...'
+sh '''
+mkdir -p "$DEPLOY_DIR"
+cp "$BUILD_DIR/index.html" "$DEPLOY_DIR/"
+echo "Deployment completed!"
+'''
+}
+}
+}
+post {
+success {
+echo 'Pipeline completed successfully!'
+}
+failure {
+echo 'Pipeline failed. Check console output.'
+}
+always {
+echo 'Pipeline execution finished.'
+}
+}
 }
